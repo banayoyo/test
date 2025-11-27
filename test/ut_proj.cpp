@@ -20,7 +20,8 @@ TEST(ProjTest, BackClassTest) {
 
 int main(int argc, char **argv) {
     // 设置全局日志级别为INFO（可改为WARN/DEBUG等）
-    proj_logger::set_global_log_level(proj_logger::LogLevel::INFO);
+    // export PROJ_LOG_LEVEL=debug
+    // proj_logger::set_global_log_level(proj_logger::LogLevel::OFF);
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

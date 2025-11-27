@@ -1,0 +1,44 @@
+# ignore golden_repo third_party
+golden_repo/
+third_party/
+
+# =====================
+# 构建输出
+# =====================
+build/
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+# =====================
+# 临时文件
+# =====================
+*.log
+*.tmp
+*.bak
+*~
+
+# =====================
+# 编辑器/IDE 文件
+# =====================
+# VSCode
+.vscode/
+
+# JetBrains 系列 (CLion, etc.)
+.idea/
+*.iml
+*.iws
+
+# =====================
+# 操作系统文件
+# =====================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
