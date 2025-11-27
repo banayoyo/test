@@ -18,18 +18,18 @@ LoggerManager::LoggerManager() {
 }
 
 // 字符串转日志级别（支持大小写不敏感）
-LogLevel LoggerManager::str_to_loglevel(const std::string& level_str) {
+proj_logger::LogLevel LoggerManager::str_to_loglevel(const std::string& level_str) {
     std::string lower_str = level_str;
     std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), ::tolower);
 
-    if (lower_str == "trace") return LogLevel::TRACE;
-    if (lower_str == "debug") return LogLevel::DEBUG;
-    if (lower_str == "info") return LogLevel::INFO;
-    if (lower_str == "warn") return LogLevel::WARN;
-    if (lower_str == "error") return LogLevel::ERROR;
-    if (lower_str == "critical") return LogLevel::CRITICAL;
-    if (lower_str == "off") return LogLevel::OFF;
-    return LogLevel::INFO; // 默认级别
+    if (lower_str == "trace") return proj_logger::LogLevel::TRACE;
+    if (lower_str == "debug") return proj_logger::LogLevel::DEBUG;
+    if (lower_str == "info") return proj_logger::LogLevel::INFO;
+    if (lower_str == "warn") return proj_logger::LogLevel::WARN;
+    if (lower_str == "error") return proj_logger::LogLevel::ERROR;
+    if (lower_str == "critical") return proj_logger::LogLevel::CRITICAL;
+    if (lower_str == "off") return proj_logger::LogLevel::OFF;
+    return proj_logger::LogLevel::INFO; // 默认级别
 }
 
 // 从环境变量初始化日志级别（仅执行一次）
@@ -39,9 +39,9 @@ void LoggerManager::init_level_from_env() {
 
     const char* env_val = std::getenv("PROJ_LOG_LEVEL");
     if (env_val != nullptr && *env_val != '\0') {
-        LogLevel level = str_to_loglevel(env_val);
+        proj_logger::LogLevel level = str_to_loglevel(env_val);
         default_level_ = to_spdlog_level(level);
-        std::cout<<"!!! Env set log_level to "<<int(level)<<std::endl;
+        std::cout<<"!!! Env set log_level to "<<cvtLogLevel(level).c_str()<<std::endl;
     }
 
     set_all_log_level(default_level_);
@@ -74,7 +74,7 @@ void LoggerManager::set_all_log_level(spdlog::level::level_enum level) {
 }
 
 // 实现全局日志级别设置
-void set_global_log_level(LogLevel level) {
+void set_global_log_level(proj_logger::LogLevel level) {
     LoggerManager::get_instance().set_all_log_level(to_spdlog_level(level));
 }
 
