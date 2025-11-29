@@ -5,6 +5,7 @@ project(proj_log_system LANGUAGES CXX)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 # ===================== 关键：链接线程库（GTest必需）=====================
 find_package(Threads REQUIRED)

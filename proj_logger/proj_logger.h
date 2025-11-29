@@ -4,6 +4,7 @@
 
 #include <string>
 #include <spdlog/spdlog.h>
+#include <spdlog/common.h>  // 包含 source_loc 定义
 #include <memory>
 #include "enum_base.h"  // 引入新的枚举基础头文件
 
@@ -67,17 +68,20 @@ inline spdlog::level::level_enum to_spdlog_level(proj_logger::LogLevel level) {
 
 // 模板日志函数（头文件实现）
 template<typename... Args>
-void log(proj_logger::LogLevel level, const std::string& logger_name, const char* fmt, const Args&... args) {
+void log(proj_logger::LogLevel level, const std::string& logger_name,
+    const char* file, int line, const char* fmt, const Args&... args) {
     auto logger = LoggerManager::get_instance().get_logger(logger_name);
-    logger->log(to_spdlog_level(level), fmt, args...);
+    spdlog::source_loc loc(file, line, __func__);
+    logger->log(loc, to_spdlog_level(level), fmt, args...);
 }
 
 void set_global_log_level(proj_logger::LogLevel level);
 
 // 宏定义
 #define LOGGER(LEVEL, FMT, LOGGER_NAME, ...) \
-    proj_logger::log(proj_logger::LogLevel::LEVEL, LOGGER_NAME, FMT, ##__VA_ARGS__)
+    proj_logger::log(proj_logger::LogLevel::LEVEL, LOGGER_NAME, __FILE__, __LINE__, FMT, ##__VA_ARGS__)
 
+#define MALOG_DEBG(module, fmt, ...) LOGGER(DEBUG, fmt, module, ##__VA_ARGS__)
 #define MALOG_WARN(module, fmt, ...) LOGGER(WARN, fmt, module, ##__VA_ARGS__)
 #define MALOG_INFO(module, fmt, ...) LOGGER(INFO, fmt, module, ##__VA_ARGS__)
 

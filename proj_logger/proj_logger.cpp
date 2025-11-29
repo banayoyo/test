@@ -59,7 +59,7 @@ std::shared_ptr<spdlog::logger> LoggerManager::get_logger(const std::string& nam
 
     auto logger = std::make_shared<spdlog::logger>(name, shared_sink_);
     logger->set_level(default_level_);
-    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] %v");
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [%s:%#] %v");
     loggers_[name] = logger;
     return logger;
 }
