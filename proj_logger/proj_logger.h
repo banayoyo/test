@@ -22,6 +22,7 @@ namespace proj_logger {
 DEFINE_PROJ_ENUM(LogLevel, LOG_LEVEL_ITEMS)
 
 // 完整定义日志管理器类（解决不完全类型问题）
+//TODO::从NoCopyMove
 class LoggerManager {
 public:
     static LoggerManager& get_instance() {

@@ -7,4 +7,4 @@ add_library(proj_logger STATIC
 target_link_libraries(proj_logger PUBLIC spdlog::spdlog)
 
 # 头文件路径
-target_include_directories(proj_logger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(proj_logger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../engine_base)
