@@ -10,5 +10,6 @@
 #define PROJ_DEBG(fmt, ...) MALOG_DEBG(PROJ_LOGGER_NAME, fmt, ##__VA_ARGS__)
 #define PROJ_WARN(fmt, ...) MALOG_WARN(PROJ_LOGGER_NAME, fmt, ##__VA_ARGS__)
 #define PROJ_INFO(fmt, ...) MALOG_INFO(PROJ_LOGGER_NAME, fmt, ##__VA_ARGS__)
+#define PROJ_ERRO(fmt, ...) MALOG_ERRO(PROJ_LOGGER_NAME, fmt, ##__VA_ARGS__)
 
 #endif // PROJ_COMMON_LOG_H

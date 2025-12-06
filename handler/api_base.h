@@ -139,7 +139,7 @@ public:
         }
 
         std::lock_guard<std::mutex> lock(handlers_mutex_);
-        handlers_[EventType::type()] = [handler](const void* event_ptr) {
+        handlers_[EventType::type()] = [handler = std::move(handler)](const void* event_ptr) {
             handler(*static_cast<const EventType*>(event_ptr));
         };
     }

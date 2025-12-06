@@ -6,6 +6,7 @@
 #include <type_traits> // 必须包含类型特性头文件
 
 #include "../handler/api_base.h"
+#include "../handler/api_base_single.h"
 #include <any>
 #include <string>
 #include <chrono>
@@ -180,6 +181,103 @@ TEST(ApiBaseTest, DestructionThreadSafety) {
     worker2.join();
     EXPECT_TRUE(true);
 }
+
+// ApiBaseSingle单线程功能测试
+TEST(ApiBaseSingleTest, SingleThreadFunctionality) {
+    TEST_INFO("Start ApiBaseSingle single thread test");
+
+    proj::event::ApiBaseSingle api;
+    // 验证绑定线程正确
+    EXPECT_EQ(api.bound_thread_id(), std::this_thread::get_id());
+
+    // 测试默认处理器
+    proj::event::TensorEvent tensor_event("tensor_single", {2, 2}, "float32");
+    api.process(tensor_event);
+
+    proj::event::OpAddEvent add_event("add_single", "in1", "in2", "out");
+    api.process(add_event);
+
+    proj::event::OpMMAEvent mma_event("mma_single", "a", "b", "c", "d");
+    api.process(mma_event);
+
+    // 测试动态注册
+    bool custom_handled = false;
+    class CustomSingleEvent : public proj::event::Event<CustomSingleEvent> {
+    public:
+        int value() const { return 42; }
+    };
+
+    api.register_handler<CustomSingleEvent>([&](const CustomSingleEvent& e) {
+        PROJ_INFO("CustomSingleEvent handled, value={}", e.value());
+        custom_handled = true;
+    });
+
+    api.process(CustomSingleEvent());
+    EXPECT_TRUE(custom_handled);
+
+    TEST_WARN("ApiBaseSingle single thread test finished");
+}
+
+// ApiBaseSingle多线程错误测试
+TEST(ApiBaseSingleTest, MultiThreadError) {
+    TEST_INFO("Start ApiBaseSingle multi thread error test");
+
+    proj::event::ApiBaseSingle api;
+    std::atomic<bool> error_occurred(false);
+    std::atomic<int> exception_count(0);
+
+    // 测试跨线程process调用
+    std::thread t1([&]() {
+        try {
+            proj::event::TensorEvent event("cross_thread", {1}, "float16");
+            api.process(event); // 应抛出异常
+        } catch (const std::runtime_error& e) {
+            PROJ_INFO("Expected process error: {}", e.what());
+            error_occurred = true;
+            exception_count++;
+        } catch (...) {
+            PROJ_ERRO("Unexpected process exception");
+        }
+    });
+
+    // 测试跨线程register_handler调用
+    std::thread t2([&]() {
+        try {
+            api.register_handler<proj::event::OpAddEvent>([](const auto&) {});
+        } catch (const std::runtime_error& e) {
+            PROJ_INFO("Expected register error: {}", e.what());
+            error_occurred = true;
+            exception_count++;
+        } catch (...) {
+            PROJ_ERRO("Unexpected register exception");
+        }
+    });
+
+    t1.join();
+    t2.join();
+
+    EXPECT_TRUE(error_occurred);
+    EXPECT_EQ(exception_count, 2); // 两个线程都应抛出异常
+
+    TEST_WARN("ApiBaseSingle multi thread error test finished");
+}
+
+// 测试销毁后调用，无法做到
+// TEST(ApiBaseSingleTest, PostDestructionCall) {
+//     auto api = std::make_unique<proj::event::ApiBaseSingle>();
+//     const auto bound_id = api->bound_thread_id();
+//     api.reset(); // 销毁对象
+
+//     // 测试销毁后调用process
+//     proj::event::TensorEvent event("post_destroy", {1}, "int32");
+//     try {
+//         // 注意：这里必须在绑定线程调用（否则会先触发线程错误）
+//         api->process(event); // 已销毁，应警告但不崩溃
+//     } catch (const std::runtime_error& e) {
+//         PROJ_INFO("Expected post-destroy error: {}", e.what());
+//     }
+// }
+
 
 int main(int argc, char **argv) {
     // 设置全局日志级别为INFO（可改为WARN/DEBUG等）

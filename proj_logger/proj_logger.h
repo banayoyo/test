@@ -84,7 +84,7 @@ void set_global_log_level(proj_logger::LogLevel level);
 #define MALOG_DEBG(module, fmt, ...) LOGGER(DEBUG, fmt, module, ##__VA_ARGS__)
 #define MALOG_WARN(module, fmt, ...) LOGGER(WARN, fmt, module, ##__VA_ARGS__)
 #define MALOG_INFO(module, fmt, ...) LOGGER(INFO, fmt, module, ##__VA_ARGS__)
-
+#define MALOG_ERRO(module, fmt, ...) LOGGER(ERROR, fmt, module, ##__VA_ARGS__)
 } // namespace proj_logger
 
 #endif // PROJ_LOGGER_H
